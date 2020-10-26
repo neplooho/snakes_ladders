@@ -3,11 +3,15 @@ package com.example.demo.service.impl;
 import com.example.demo.model.Game;
 import com.example.demo.model.Player;
 import com.example.demo.model.enumeration.GameStatus;
+import com.example.demo.repository.GameRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.example.demo.model.enumeration.GameStatus.IN_PROGRESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,6 +25,9 @@ public class GameServiceImplTest {
     @InjectMocks
     private GameServiceImpl testedInstance;
 
+    @Mock
+    private GameRepository gameRepository;
+
     @Test
     void shouldPositionPlayerWhenGameStarts(){
         Player player = new Player();
@@ -30,10 +37,12 @@ public class GameServiceImplTest {
         game.setGameStatus(GameStatus.CREATED);
         game.setPlayer(player);
 
+        Game startedGame = constructStartedGame(player);
+        Mockito.when(gameRepository.save(game)).thenReturn(startedGame);
         Game resultGame = testedInstance.startGame(game, player);
         assertEquals(1, resultGame.getBoardRow(), "After game started all players should be at 1:1");
         assertEquals(1, resultGame.getBoardColumn(), "After game started all players should be at 1:1");
-        assertEquals(GameStatus.IN_PROGRESS, resultGame.getGameStatus(), "Game status should be in progress after game started");
+        assertEquals(IN_PROGRESS, resultGame.getGameStatus(), "Game status should be in progress after game started");
     }
 
     @Test
@@ -48,7 +57,7 @@ public class GameServiceImplTest {
         Game resultGame = testedInstance.movePlayer(game, 3);
         assertEquals(4, resultGame.getBoardColumn(), "Player should move by 3 blocks");
         assertEquals(1, resultGame.getBoardRow(), "Player should stay at same row");
-        assertEquals(GameStatus.IN_PROGRESS, resultGame.getGameStatus(), "Game should still be playable");
+        assertEquals(IN_PROGRESS, resultGame.getGameStatus(), "Game should still be playable");
     }
 
     @Test
@@ -82,5 +91,15 @@ public class GameServiceImplTest {
         Game resultGame = testedInstance.movePlayer(game, 4);
 
         assertEquals(GameStatus.FINISHED, resultGame.getGameStatus(), "Player shouldn't win the game");
+    }
+
+    private Game constructStartedGame(Player player) {
+        Game game = new Game();
+        game.setPlayer(player);
+        game.setBoardRow(1);
+        game.setBoardColumn(1);
+        game.setGameStatus(IN_PROGRESS);
+
+        return game;
     }
 }
