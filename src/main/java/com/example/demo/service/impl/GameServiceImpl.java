@@ -22,6 +22,9 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game movePlayer(Game game, int positions) {
+        if (!isMovePossible(game, positions)){
+            return gameRepository.save(game);
+        }
         int newColumnPosition = game.getBoardColumn() + positions;
         game.setBoardColumn(newColumnPosition);
         if (isWin(game)){
@@ -41,6 +44,10 @@ public class GameServiceImpl implements GameService {
     @Override
     public int rollDice() {
         return new Random().nextInt(6) + 1;
+    }
+
+    private boolean isMovePossible(Game game, int positions) {
+        return (game.getBoardRow() <= 9) && (positions <= 10 - game.getBoardColumn());
     }
 
     private boolean isWin(Game game){

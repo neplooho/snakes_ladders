@@ -75,12 +75,15 @@ public class GameServiceImplTest {
         game.setPlayer(player);
         game.setBoardColumn(7);
         game.setBoardRow(9);
+        game.setGameStatus(IN_PROGRESS);
 
         Game expectedGameStatus = constructFinishedGame(game.getId(), player);
         Mockito.when(gameRepository.save(expectedGameStatus)).thenReturn(expectedGameStatus);
         Game resultGame = testedInstance.movePlayer(game, 3);
 
         assertEquals(GameStatus.FINISHED, resultGame.getGameStatus(), "Player should win the game");
+        assertEquals(9, resultGame.getBoardRow(), "Player should be at last row");
+        assertEquals(10, resultGame.getBoardColumn(), "Player should be in last column");
     }
 
     @Test
@@ -90,11 +93,16 @@ public class GameServiceImplTest {
         Game game = new Game();
         game.setId(GAME_ID);
         game.setPlayer(player);
-        game.setBoardColumn(9);
-        game.setBoardRow(7);
+        game.setBoardColumn(7);
+        game.setBoardRow(9);
+        game.setGameStatus(IN_PROGRESS);
+
+        Mockito.when(gameRepository.save(game)).thenReturn(game);
         Game resultGame = testedInstance.movePlayer(game, 4);
 
-        assertEquals(GameStatus.FINISHED, resultGame.getGameStatus(), "Player shouldn't win the game");
+        assertEquals(IN_PROGRESS, resultGame.getGameStatus(), "Player shouldn't win the game");
+        assertEquals(7, resultGame.getBoardColumn(), "Player should stay at same column");
+        assertEquals(9, resultGame.getBoardRow(), "Player should stay at same row");
     }
 
     private Game constructStartedGame(Player player) {
