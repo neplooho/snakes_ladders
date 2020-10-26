@@ -49,11 +49,10 @@ public class GameServiceImplTest {
     void shouldMovePlayerForwardFromStart(){
         Player player = new Player();
         player.setId(PLAYER_ID);
-        Game game = new Game();
-        game.setId(GAME_ID);
-        game.setPlayer(player);
-        game.setBoardColumn(1);
-        game.setBoardRow(1);
+        Game game = constructStartedGame(player);
+        Game expectedGameState = constructStartedGame(player);
+        expectedGameState.setBoardColumn(4);
+        Mockito.when(gameRepository.save(expectedGameState)).thenReturn(expectedGameState);
         Game resultGame = testedInstance.movePlayer(game, 3);
         assertEquals(4, resultGame.getBoardColumn(), "Player should move by 3 blocks");
         assertEquals(1, resultGame.getBoardRow(), "Player should stay at same row");

@@ -22,7 +22,9 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game movePlayer(Game game, int positions) {
-        return new Game();
+        int newColumnPosition = game.getBoardColumn() + positions;
+        game.setBoardColumn(newColumnPosition);
+        return gameRepository.save(game);
     }
 
     @Override
