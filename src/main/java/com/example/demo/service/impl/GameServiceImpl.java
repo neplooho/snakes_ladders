@@ -24,6 +24,9 @@ public class GameServiceImpl implements GameService {
     public Game movePlayer(Game game, int positions) {
         int newColumnPosition = game.getBoardColumn() + positions;
         game.setBoardColumn(newColumnPosition);
+        if (isWin(game)){
+            game.setGameStatus(GameStatus.FINISHED);
+        }
         return gameRepository.save(game);
     }
 
@@ -38,5 +41,9 @@ public class GameServiceImpl implements GameService {
     @Override
     public int rollDice() {
         return new Random().nextInt(6) + 1;
+    }
+
+    private boolean isWin(Game game){
+        return (game.getBoardRow() == 9) && (game.getBoardColumn() == 10);
     }
 }

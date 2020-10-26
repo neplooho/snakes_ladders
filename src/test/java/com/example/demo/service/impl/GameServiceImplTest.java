@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.example.demo.model.enumeration.GameStatus.FINISHED;
 import static com.example.demo.model.enumeration.GameStatus.IN_PROGRESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -72,12 +73,16 @@ public class GameServiceImplTest {
         Game game = new Game();
         game.setId(GAME_ID);
         game.setPlayer(player);
-        game.setBoardColumn(9);
-        game.setBoardRow(7);
+        game.setBoardColumn(7);
+        game.setBoardRow(9);
+
+        Game expectedGameStatus = constructFinishedGame(game.getId(), player);
+        Mockito.when(gameRepository.save(expectedGameStatus)).thenReturn(expectedGameStatus);
         Game resultGame = testedInstance.movePlayer(game, 3);
 
         assertEquals(GameStatus.FINISHED, resultGame.getGameStatus(), "Player should win the game");
     }
+
     @Test
     void shouldNotWinTheGame() {
         Player player = new Player();
@@ -98,6 +103,17 @@ public class GameServiceImplTest {
         game.setBoardRow(1);
         game.setBoardColumn(1);
         game.setGameStatus(IN_PROGRESS);
+
+        return game;
+    }
+
+    private Game constructFinishedGame(int gameId, Player player) {
+        Game game = new Game();
+        game.setId(gameId);
+        game.setPlayer(player);
+        game.setBoardRow(9);
+        game.setBoardColumn(10);
+        game.setGameStatus(FINISHED);
 
         return game;
     }
